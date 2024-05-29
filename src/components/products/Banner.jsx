@@ -24,10 +24,10 @@ function Banner() {
 
    
       <Slider {...settings}>
-        {Array.from({ length: 4 }, () => {
+        {Array.from({ length: 4 }, (id) => {
           return (
             <>
-              <div className="w-full md;h-[450px] h-[240px]">
+              <div key={id+Date.now()} className="w-full md;h-[450px] h-[240px]">
                 <div className="">
                   <img
                     className="w-full h-full object-cover rounded-[5px]"

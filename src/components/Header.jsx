@@ -67,7 +67,7 @@ function Header(props) {
           console.log(res.data);
           
           setCartItems([...res.data]);
-          const tmp=[...res.data].map((elm)=>{
+          const tmp=[...res.data].map((elm , id)=>{
             return {...elm.productDetails , quantity:1}
           });
           console.log("tmp" , tmp);
@@ -127,7 +127,7 @@ function Header(props) {
 
 }
   useEffect(() => {
-    getCartProducts();
+   tokenHelper.get() && getCartProducts();
   }, [cartLength]);
   return (
     <div>
@@ -316,7 +316,7 @@ function Header(props) {
                 { cartItems?.map((elm,id)=>{
                   return(
                     <>
-                    <tr>
+                    <tr key={id}>
                     <td className="text-start  pt-5">
                       <div className="w-[250px]  flex flex-row">
                         <div className="w-[100px] h-[100px]">

@@ -386,10 +386,10 @@ function Myaccount() {
                  <div className='py-4 px-3'>
                    <ul className='flex lg:flex-col flex-wrap gap-2'>
                    {
-                    options.map((elm)=>{
+                    options.map((elm , id)=>{
                         return(
                             <>
-                   <li className={`text-[14px] font-[700] pt-2 ${elm===option ? 'border-[#6060e6] border-l-[4px] ps-[8px] text-black ' : 'ps-[12px] '} rounded-[1px]   text-[#666]  pb-2`} onClick={()=>{setOption(elm)}}>{elm}</li>
+                   <li key={id} className={`text-[14px] font-[700] pt-2 ${elm===option ? 'border-[#6060e6] border-l-[4px] ps-[8px] text-black ' : 'ps-[12px] '} rounded-[1px]   text-[#666]  pb-2`} onClick={()=>{setOption(elm)}}>{elm}</li>
                                 
                             </>
                         )

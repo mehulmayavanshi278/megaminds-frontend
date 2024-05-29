@@ -24,11 +24,12 @@ function CategoriesNavBar() {
       <>
         <div className="py-2">
           <ul className="flex flex-wrap justify-start gap-2">
-            {categories?.map((elm) => {
+            {categories?.map((elm,id) => {
               return (
                 <>
 
                   <a
+                  key={elm}
                     href={`/products/${elm}`}
                     className={`text-[12px] text-[#666]  ps-3 hover:text-red-500 cursor-pointer hover:border-b-2 hover:border-red-500 ${
                       elm === currCategory ? " border-b-2 border-red-500" : ""

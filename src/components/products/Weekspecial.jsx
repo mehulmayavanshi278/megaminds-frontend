@@ -129,10 +129,10 @@ const SimpleSlider = () => {
 
            
            {
-            Array.from({length:12} , ()=>{
+            Array.from({length:12} , (id)=>{
                 return(
                     <>
-                    <div className='w-[250px] relative pb-4 bg-[white] shadow-normal hover:shadow-custom rounded-[5px] mt-3 mb-3 mx-auto'>
+                    <div key={Date.now()+id} className='w-[250px] relative pb-4 bg-[white] shadow-normal hover:shadow-custom rounded-[5px] mt-3 mb-3 mx-auto'>
         <div className='w-[130px] mx-auto h-[150px]  ' onClick={()=>{history(`/products/${Date.now()+2000}/${Date.now()}`);setPath(window.location.href)}}>
             <img className='w-full h-full object-cover' src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1656077250-13442792-1424913539756896.jpg?crop=1xw:1.00xh;center,top&resize=980:*" alt=''/>
         </div>

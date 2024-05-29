@@ -11,6 +11,7 @@ import productService from '../../service/product.service';
 import { MyContext } from '../../App';
 import { toast } from 'react-toastify';
 import cartService from '../../service/cart.service';
+import tokenHelper from '../../Helper/tokenHelper';
 
 
 
@@ -76,10 +77,10 @@ export const CategorySideBar = ()=>{
                 <ul>
 
 
-                {categories?.map((elm)=>{
+                {categories?.map((elm,id)=>{
                   return(
                     <>
-                    <li className={`text-[14px]  hover:underline py-2 ps-3 ${currCategory===elm ? 'text-[red] underline' : 'text-[#666]'}`} onClick={()=>{setCurrCategory(elm)}}> <a href={`/products/${elm}`}> {elm} </a></li>
+                    <li key={elm} className={`text-[14px]  hover:underline py-2 ps-3 ${currCategory===elm ? 'text-[red] underline' : 'text-[#666]'}`} onClick={()=>{setCurrCategory(elm)}}> <a href={`/products/${elm}`}> {elm} </a></li>
                     </>
                   )
                 })}
@@ -131,7 +132,7 @@ function Homepage() {
   }
 
   useEffect(()=>{
-    getProducts("");
+   tokenHelper.get() && getProducts("");
 
   },[])
   return (

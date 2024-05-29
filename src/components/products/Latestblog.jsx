@@ -67,10 +67,10 @@ function Latestblog() {
     <Slider {...settings}> 
 
     {
-        Array.from({length:5},()=>{
+        Array.from({length:5},(id)=>{
             return(
                 <>
-                <div className='bg-white rounded-[5px] p-[20px] w-[90%]  mx-auto'>
+                <div key={Date.now()} className='bg-white rounded-[5px] p-[20px] w-[90%]  mx-auto'>
           <div className=''>
              <h2 className='text-[#6060dc] font-[500]'>Antidioxite</h2>
           </div>

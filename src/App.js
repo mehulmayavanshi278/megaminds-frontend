@@ -48,12 +48,12 @@ export const MyProvider = ({ children }) => {
 };
 
 function App() {
-  console.log("header", Homepage);
+  // console.log("header", Homepage);
   return (
     <BrowserRouter>
       <MyProvider>
         <Routes>
-          <Route path="/" element={<Homepage />}></Route>
+          <Route path="/"  element={<Homepage />}></Route>
           <Route exact path="/products" element={<Product />}></Route>
 
           <Route path="/products/:type/:id" element={<Singleproduct />}></Route>

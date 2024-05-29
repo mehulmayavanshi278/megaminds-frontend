@@ -232,7 +232,7 @@ function Singleproduct() {
                 <div className="pt-4">
                   <div className="">
                     <ul className="flex flex-wrap justify-start gap-4">
-                      {tabs.map((tab) => (
+                      {tabs.map((tab , id) => (
                         <li
                           key={tab}
                           onClick={() => setActiveTab(tab)}

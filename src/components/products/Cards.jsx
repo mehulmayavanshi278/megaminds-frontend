@@ -55,6 +55,7 @@ function Cards() {
           return (
             <>
               <div
+              key={id+id+Date.now()}
                 className="lg:w-[230px] w-[260px] mx-auto bg-white relative py-[20px] px-[10px] transition-all   hover:shadow-custom shadow-normal  rounded-[2px] mt-3 "
                 onClick={() => {
                   history(`${elm._id}`);
