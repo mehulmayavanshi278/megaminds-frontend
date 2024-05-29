@@ -16,6 +16,7 @@ import { MyContext } from "../../App";
 import productService from "../../service/product.service";
 import CategoriesNavBar from "../../components/products/CategoriesNavBar";
 import cartService from "../../service/cart.service";
+import { toast } from "react-toastify";
 
 
 function Product() {
@@ -28,16 +29,16 @@ function Product() {
   const handleSortChange = (event) => {
     setSortValue(event.target.value);
   };
-  const [value, setValue] = useState(1000);
+  const [sortByPrice, setSortByPrice] = useState(1000);
 
   const handleSliderChange = (event, newValue) => {
-    setValue(newValue);
+    setSortByPrice(newValue);
   };
   const getProducts = async(type)=>{
     try{
       let query = `?type=${type}`
       const res = await productService.getproducts(query);
-      if(res.status===200){
+      if(res?.status===200){
         console.log(res.data);
         setProducts([...res.data.data])
         setDisplayedProducts([...res.data?.data].slice(0,8));
@@ -50,7 +51,7 @@ function Product() {
   const getCartItems = async()=>{
     try{
       const res = await cartService.getCartProducts();
-      if(res.status===200){
+      if(res?.status===200){
         setCartLength(res?.data?.length)
       }
     }catch(err){
@@ -99,10 +100,8 @@ function Product() {
                       <h1 className="text-[15px] text-[#666]">Price</h1>
                     </div>
                     <Slider
-                      value={value}
-                      onChange={(e) => {
-                        handleSliderChange(value, e.target.value);
-                      }}
+                      value={sortByPrice}
+                      onChange={handleSliderChange}
                       aria-labelledby="price-range-slider"
                       valueLabelDisplay="auto"
                       min={100}
@@ -121,7 +120,7 @@ function Product() {
                     />
                     <div className="flex flex-row justify-between">
                       <h1> {"100"}</h1>
-                      <h1> {value}</h1>
+                      <h1> {sortByPrice}</h1>
                     </div>
                   </div>
                 </div>

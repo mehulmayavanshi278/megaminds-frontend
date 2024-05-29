@@ -31,11 +31,9 @@ class userService {
   };
 
   login = async (data) => {
-    try {
+ 
       return await axios.post(BaseURL + loginApi, data);
-    } catch (err) {
-      console.log(err);
-    }
+
   };
   update = async (data) => {
     try {

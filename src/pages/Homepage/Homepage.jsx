@@ -12,6 +12,7 @@ import { MyContext } from '../../App';
 import { toast } from 'react-toastify';
 import cartService from '../../service/cart.service';
 import tokenHelper from '../../Helper/tokenHelper';
+import userService from '../../service/user.service';
 
 
 
@@ -117,7 +118,7 @@ function Homepage() {
 
 
   const [products , setProducts] = useState();
-  const {setCartLength , cartItems ,  setCartItems} = useContext(MyContext)
+  const {setCartLength , cartItems ,  setCartItems , userData , setUserData , refresher, setRefresher} = useContext(MyContext)
 
   const getProducts = async(query)=>{
     try{
@@ -131,10 +132,20 @@ function Homepage() {
     }
   }
 
-  useEffect(()=>{
-   tokenHelper.get() && getProducts("");
+  const getUserData = async()=>{
+    try{
+     const res = await userService.getUser();
+     console.log(res.data)
+     if(res?.status===200) setUserData(res.data);
+    }catch(err){
+      console.log(err);
+    }
+  }
 
-  },[])
+  useEffect(()=>{
+   tokenHelper.get() && getProducts("") && getUserData();
+
+  },[refresher , setRefresher])
   return (
     <> 
 

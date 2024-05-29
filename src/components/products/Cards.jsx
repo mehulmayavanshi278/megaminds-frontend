@@ -33,7 +33,7 @@ function Cards() {
   const addToCart = async (id) => {
     try {
       const res = await cartService.addToCart({ productId: id });
-      if (res.status === 200) {
+      if (res?.status === 200) {
         console.log(res?.data);
         toast.success("One Item Added To Cart");
         setCartLength(res.data?.cartItems?.length);
@@ -43,6 +43,10 @@ function Cards() {
       }
     } catch (err) {
       console.log(err);
+      if (err.response && err.response.status === 400) {
+        toast.error(err?.response?.data?.message);
+        return;
+     }
     }
   };
 
@@ -88,13 +92,7 @@ function Cards() {
                     <div className="flex flex-row gap-3 justify-center items-center">
                       <h1 className="text-gray-500 text-[18px] line-through ">
                         ₹
-                        {(
-                          Math.floor(
-                            Math.random() * (elm.price * 2 - elm.price + 1)
-                          ) +
-                          50 +
-                          elm.price
-                        ).toFixed(2)}
+                        {(elm?.price+27).toFixed(2)}
                       </h1>
                       <h1 className="text-red-600 text-[18px]  font-semibold">
                         ₹{elm?.price}

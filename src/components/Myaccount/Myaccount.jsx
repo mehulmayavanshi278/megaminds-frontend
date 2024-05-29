@@ -34,11 +34,15 @@ const AccDetails = ({userInfo})=>{
     console.log(userData)
     try{
       const res = await userService.update(userData);
-      if(res.status===200){
+      if(res?.status===200){
         toast.success("updated successfully");
       }
     }catch(err){
       console.log(err);
+      if (err.response && err.response.status === 400) {
+        toast.error(err?.response?.data?.message);
+        return;
+     }
     }
   }
   useEffect(()=>{
@@ -360,12 +364,16 @@ function Myaccount() {
  const getUserData=async()=>{
    try{
      const res = await userService.getUser();
-     if(res.status===200){
+     if(res?.status===200){
        console.log(res.data);
        setUserData({...res.data});
      }
    }catch(err){
      console.log(err);
+     if (err.response && err.response.status === 400) {
+      toast.error(err?.response?.data?.message);
+      return;
+   }
    }
  }
 

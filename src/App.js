@@ -8,7 +8,7 @@ import Myaccount from "./components/Myaccount/Myaccount";
 import Signup from "./pages/signup/Signup";
 import Success from "./pages/checkout-success/Success";
 import Cart from "./pages/cart/Cart";
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 export const MyContext = createContext();
 
 export const MyProvider = ({ children }) => {
@@ -20,6 +20,7 @@ export const MyProvider = ({ children }) => {
   const [displayedProducts, setDisplayedProducts] = useState();
   const [cartLength, setCartLength] = useState();
   const [cartItems, setCartItems] = useState();
+  const [refresher, setRefresher] = useState(0);
 
   return (
     <MyContext.Provider
@@ -39,7 +40,9 @@ export const MyProvider = ({ children }) => {
         cartItems,
         setCartItems,
         userData , 
-        setUserData
+        setUserData,
+        refresher,
+        setRefresher
       }}
     >
       {children}
@@ -49,6 +52,7 @@ export const MyProvider = ({ children }) => {
 
 function App() {
   // console.log("header", Homepage);
+
   return (
     <BrowserRouter>
       <MyProvider>

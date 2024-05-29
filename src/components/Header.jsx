@@ -20,7 +20,7 @@ import tokenHelper from "../Helper/tokenHelper";
 
 function Header(props) {
   const history = useNavigate();
-  const {cartLength , setCartLength ,cartItems , setCartItems} = useContext(MyContext);
+  const {cartLength , setCartLength ,cartItems , setCartItems , userData , setUserData , refresher , setRefresher} = useContext(MyContext);
   const [isOpenSearchBar, setIsOpenSearchBar] = useState(false);
   const [isOpenCart, setIsOpenCart] = useState(null);
   const [isOpenPopUp, setIsOpenPopUp] = useState(false);
@@ -63,7 +63,7 @@ function Header(props) {
   const getCartProducts = async()=>{
     try{
         const res = await cartService.getCartItems();
-        if(res.status===200){
+        if(res?.status===200){
           console.log(res.data);
           
           setCartItems([...res.data]);
@@ -75,6 +75,10 @@ function Header(props) {
           setCartLength(res.data.length);
         }
     }catch(err){
+      if (err.response && err.response.status === 400) {
+        toast.error(err?.response?.data?.message);
+        return;
+     }
       console.log(err);
     }
   }
@@ -83,7 +87,7 @@ function Header(props) {
      try{ 
       console.log(id);
       const res = await cartService.removeFromCart(id);
-      if(res.status===200){
+      if(res?.status===200){
         console.log(res.data);
         setCartItems([...res.data]);
         setCartLength(res.data.length)
@@ -91,6 +95,10 @@ function Header(props) {
       }
      }catch(err){
       console.log(err);
+      if (err.response && err.response.status === 400) {
+        toast.error(err?.response?.data?.message);
+        return;
+     }
      }
   }
 
@@ -126,13 +134,17 @@ function Header(props) {
     }
 
 }
+const handleLogout = async()=>{
+   tokenHelper.delete("token");
+   setRefresher(refresher+1);
+}
   useEffect(() => {
    tokenHelper.get() && getCartProducts();
-  }, [cartLength]);
+  }, [refresher]);
   return (
     <div>
       <div
-        className={`absolute h-[900px] w-full ${
+        className={`absolute h-full w-full ${
           isOpenCart ? "z-30" : ""
         } z-10 bg-[#2e2b2b] opacity-[0.6] ${isOpenPopUp ? "block" : "hidden"}`}
         onClick={closePopUp}
@@ -254,7 +266,7 @@ function Header(props) {
                         <p>Your wishlists</p>
                       </div>
                       <div className="h-[1px] bg-[#7f7e7e] mt-[25px]"></div>
-                      <div className="mt-3">
+                      {!userData?.firstName && <div className="mt-3">
                         <p className="text-[#8a7171] text-[12px] text-center">
                           if you are new user?
                         </p>
@@ -264,8 +276,8 @@ function Header(props) {
                         >
                           Register
                         </p>
-                      </div>
-                      <div className="px-[20px] mt-2">
+                      </div>}
+                     { !userData?.firstName ? <div className="px-[20px] mt-2">
                         <button
                           className="w-full py-2 bg-[red] rounded-[3px] text-center hover:bg-[#e14c4c]"
                           onClick={openLoginPopUp}
@@ -273,8 +285,18 @@ function Header(props) {
                           Login
                         </button>
                       </div>
+                      :
+                      <div className="px-[20px] mt-2">
+                        <button
+                          className="w-full py-2 bg-[red] rounded-[3px] text-center hover:bg-[#e14c4c]"
+                          onClick={handleLogout}
+                        >
+                          Logout
+                        </button>
+                      </div>
+                     }
                     </div>
-                    <AccountCircleIcon style={{ fontSize: "30px" }} /> signUp
+                    <AccountCircleIcon style={{ fontSize: "30px" }} /> {userData?.firstName ||  "signUp" }
                   </li>
                 </ul>
               </div>
@@ -284,7 +306,7 @@ function Header(props) {
       </div>
 
       {isOpenCart && (
-        <div className="bg-grey-100 p-[40px] lg:w-[900px] md:w-[90%] w-[80%] overflow-x-auto md:h-[500px] h-[90%] rounded-[10px] overflow-y-scroll z-50 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white">
+        <div className="bg-grey-100 p-[40px] lg:w-[900px] w-[90%]  overflow-x-auto md:h-[500px] h-[90%] rounded-[10px] overflow-y-scroll z-50 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white">
           <div className="">
             <div className="flex flex-row justify-between ">
               <h1 className="text-[32px] font-[600] text-black font-sans ">
@@ -295,8 +317,8 @@ function Header(props) {
               </h1>
             </div>
             <div className="h-[1px]  bg-[grey]  mt-[40px]"></div>
-            <div className="">
-              <table className="md:w-full w-[600px] overflow-x-auto mt-[40px]">
+            <div className="md:w-full w-[600px] overflow-x-auto md:px-0 px-[15px]">
+              <table className="w-full overflow-x-auto mt-[40px]">
                 <thead>
                   <tr className="">
                     <th className="text-start  text-[#666]">PRODUCT DETAILS</th>
@@ -318,7 +340,7 @@ function Header(props) {
                     <>
                     <tr key={id}>
                     <td className="text-start  pt-5">
-                      <div className="w-[250px]  flex flex-row">
+                      <div className="  flex flex-row">
                         <div className="w-[100px] h-[100px]">
                           <img
                             className="w-full h-full object-cover"
@@ -350,7 +372,7 @@ function Header(props) {
                     ₹{elm?.productDetails?.price}
                     </td>
                     <td className="text-center align-top pt-5  text-black font-sans font-[700]">
-                      <button>₹{elm?.productDetails?.price * elm?.quantity}</button>
+                      <button>₹{((elm?.productDetails?.price * cartItemtmp[id]['quantity']) ).toFixed(2)}</button>
                     </td>
                   </tr>
                     </>

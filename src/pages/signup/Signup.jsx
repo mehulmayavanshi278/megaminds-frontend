@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -7,6 +7,7 @@ import { Box, Typography, Button } from "@mui/material";
 import { toast } from "react-toastify";
 import userService from "../../service/user.service";
 import tokenHelper from "../../Helper/tokenHelper";
+import { MyContext } from "../../App";
 
 
 const schema = yup.object().shape({
@@ -30,6 +31,8 @@ const loginSchema = yup.object().shape({
 });
 
 function Signup(props) {
+
+  const {refresher , setRefresher} = useContext(MyContext)
   const [signupData, setSignupData] = useState({
     email: "",
     phoneNo: "",
@@ -51,12 +54,17 @@ function Signup(props) {
       await schema.validate(signupData, { abortEarly: false });
       console.log(signupData);
       const res = await userService.signup(signupData);
-      if(res.status===200){
+      if(res?.status===200){
         console.log(res.data);
         props.openLogin();
+        setRefresher(refresher+1)
       }
       // Proceed with form submission
     } catch (err) {
+      if (err.response && err.response.status === 400) {
+        toast.error(err?.response?.data?.message);
+        return;
+     }
       const formattedErrors = err?.inner?.reduce((acc, err) => {
         return { ...acc, [err.path]: err.message };
       }, {});
@@ -80,8 +88,8 @@ function Signup(props) {
             onChange={handleSignInOnChange}
             className="w-full px-3 py-2 border rounded-md"
           />
-          {errors.firstName && (
-            <p className="text-red-500 text-sm">{errors.firstName}</p>
+          {errors?.firstName && (
+            <p className="text-red-500 text-sm">{errors?.firstName}</p>
           )}
         </Box>
         <Box mb={2}>
@@ -92,8 +100,8 @@ function Signup(props) {
             onChange={handleSignInOnChange}
             className="w-full px-3 py-2 border rounded-md"
           />
-          {errors.lastName && (
-            <p className="text-red-500 text-sm">{errors.lastName}</p>
+          {errors?.lastName && (
+            <p className="text-red-500 text-sm">{errors?.lastName}</p>
           )}
         </Box>
         <Box mb={2}>
@@ -105,8 +113,8 @@ function Signup(props) {
             onChange={handleSignInOnChange}
             className="w-full px-3 py-2 border rounded-md"
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email}</p>
+          {errors?.email && (
+            <p className="text-red-500 text-sm">{errors?.email}</p>
           )}
         </Box>
         <Box mb={2}>
@@ -118,8 +126,8 @@ function Signup(props) {
             onChange={handleSignInOnChange}
             className="w-full px-3 py-2 border rounded-md"
           />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password}</p>
+          {errors?.password && (
+            <p className="text-red-500 text-sm">{errors?.password}</p>
           )}
         </Box>
         <Box mb={2}>
@@ -130,8 +138,8 @@ function Signup(props) {
             onChange={handleSignInOnChange}
             className="w-full px-3 py-2 border rounded-md"
           />
-          {errors.phoneNo && (
-            <p className="text-red-500 text-sm">{errors.phoneNo}</p>
+          {errors?.phoneNo && (
+            <p className="text-red-500 text-sm">{errors?.phoneNo}</p>
           )}
         </Box>
         <Button
@@ -169,7 +177,7 @@ export const Login = (props) => {
 
 
 
-
+ const{refresher , setRefresher} = useContext(MyContext)
   
   const [errors, setErrors] = useState({});
   const [loginData, setLoginData] = useState({
@@ -189,14 +197,19 @@ export const Login = (props) => {
       await loginSchema.validate(loginData, { abortEarly: false });
       console.log(loginData);
       const res = await userService.login(loginData);
-      if(res.status===200){
+      if(res?.status===200){
         console.log(res.data);
         tokenHelper.create("token" , res.data.token);
         props.closePopUp();
+        setRefresher(refresher+1)
       }
       
     } catch (err) {
       console.log(err);
+      if (err.response && err.response.status === 400) {
+       toast.error(err?.response?.data?.message);
+       return;
+    }
       const formattedErrors = err?.inner?.reduce((acc, err) => {
         return { ...acc, [err.path]: err.message };
       }, {});
@@ -217,12 +230,12 @@ export const Login = (props) => {
               name="email"
               type="email"
               placeholder="Email"
-              value={loginData.email}
+              value={loginData?.email}
               onChange={handleLoginOnChange}
               className="w-full px-3 py-2 border rounded-md"
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
+            {errors?.email && (
+              <p className="text-red-500 text-sm">{errors?.email}</p>
             )}
           </Box>
           <Box mb={2}>
@@ -230,12 +243,12 @@ export const Login = (props) => {
               name="password"
               type="password"
               placeholder="Password"
-              value={loginData.password}
+              value={loginData?.password}
               onChange={handleLoginOnChange}
               className="w-full px-3 py-2 border rounded-md"
             />
-            {errors.password && (
-              <p className="text-red-500 text-sm">{errors.password}</p>
+            {errors?.password && (
+              <p className="text-red-500 text-sm">{errors?.password}</p>
             )}
           </Box>
           <Button

@@ -3,8 +3,12 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import { NextArrow, PreviousArrow } from '../products/Weekspecial';
+import { useNavigate } from 'react-router-dom';
 
 function Recentryviewed() {
+
+
+  const history = useNavigate();
 
     const settings = {
         //   dots: true,
@@ -73,7 +77,7 @@ function Recentryviewed() {
         return(
             <>
 
-            <div key={id} className='w-[180px] shadow-normal border border-solid relative bg-[white]  rounded-[5px] mt-1 py-[20px] mx-auto'>
+            <div key={id} className='w-[180px] shadow-normal border border-solid relative bg-[white]  rounded-[5px] mt-1 py-[20px] mx-auto' onClick={()=>{history(`/products/type/1235`)}}>
 <div className=' w-[120px] mx-auto h-[120px]'>
     <img className='w-full h-full object-cover' src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1656077250-13442792-1424913539756896.jpg?crop=1xw:1.00xh;center,top&resize=980:*" alt=''/>
 </div>

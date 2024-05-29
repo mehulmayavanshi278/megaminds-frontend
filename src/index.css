@@ -9,7 +9,7 @@ body{
     background-color: #f7f7f7;
 }
 
-.slick-prev, .slick-next {
+/* .slick-prev, .slick-next {
     background-color: #ff5733;
     border-radius: 50%; 
     width: 40px;
@@ -19,4 +19,4 @@ body{
     justify-content: center;
     opacity: 0.75; 
     transition: opacity 0.3s;
-  }
+  } */
