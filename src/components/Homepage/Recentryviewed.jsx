@@ -69,11 +69,11 @@ function Recentryviewed() {
 
    
    {
-    Array.from({length:12} , ()=>{
+    Array.from({length:12} , (id)=>{
         return(
             <>
 
-            <div className='w-[180px] shadow-normal border border-solid relative bg-[white]  rounded-[5px] mt-1 py-[20px] mx-auto'>
+            <div key={id} className='w-[180px] shadow-normal border border-solid relative bg-[white]  rounded-[5px] mt-1 py-[20px] mx-auto'>
 <div className=' w-[120px] mx-auto h-[120px]'>
     <img className='w-full h-full object-cover' src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1656077250-13442792-1424913539756896.jpg?crop=1xw:1.00xh;center,top&resize=980:*" alt=''/>
 </div>
