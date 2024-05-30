@@ -42,7 +42,7 @@ function Imageslider() {
   return (
     <>
 
-    <div className="xl:w-[700px]  ">
+    <div className="w-[100%] absolute ">
 
    
       <Slider {...settings}>

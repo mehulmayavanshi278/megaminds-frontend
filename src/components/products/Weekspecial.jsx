@@ -2,11 +2,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import { useNavigate } from 'react-router-dom';
+import { NavLink, Navigate, useNavigate } from 'react-router-dom';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import QuickreplyIcon from '@mui/icons-material/Quickreply';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { MyContext } from '../../App';
+import productService from '../../service/product.service';
 export const PreviousArrow = (props) => {
     const { className, style, onClick } = props;
     return (
@@ -61,8 +62,28 @@ export const PreviousArrow = (props) => {
   };
 
 
-const SimpleSlider = () => {
+const SimpleSlider = ({addToCart}) => {
+
+
+  const{ trendingProducts ,  setTrendingProducts} = useContext(MyContext)
+  
+  const getTrendingProducts = async()=>{
+    try{
+      const res = await productService.getRandomProducts();
+      if(res?.status===200){
+        console.log(res?.data);
+        setTrendingProducts([...res?.data]);
+      }
+    }catch(err){
+      console.log(err);
+    }
+}
+
+  useEffect(()=>{
+    getTrendingProducts();
+  },[]);
  const {path , setPath} = useContext(MyContext);
+
   const history = useNavigate();
     const settings = {
     //   dots: true,
@@ -115,6 +136,15 @@ const SimpleSlider = () => {
         }
       ]
     };
+
+    const handleNavigate = (id)=>{
+      console.log(window.location);
+      window.location.href = window.location.origin + "/products/1234/"+id
+    }
+
+    useEffect(()=>{
+
+    },[])
   
     return (
       <div>
@@ -129,23 +159,23 @@ const SimpleSlider = () => {
 
            
            {
-            Array.from({length:12} , (id)=>{
+             trendingProducts?.map((elm,id)=>{
                 return(
                     <>
                     <div key={Date.now()+id} className='w-[250px] relative pb-4 bg-[white] shadow-normal hover:shadow-custom rounded-[5px] mt-3 mb-3 mx-auto'>
-        <div className='w-[130px] mx-auto h-[150px]  ' onClick={()=>{history(`/products/${Date.now()+2000}/${Date.now()}`);setPath(window.location.href)}}>
+        <div className='w-[130px] mx-auto h-[150px]  ' onClick={()=>{handleNavigate(elm._id)}}>
             <img className='w-full h-full object-cover' src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1656077250-13442792-1424913539756896.jpg?crop=1xw:1.00xh;center,top&resize=980:*" alt=''/>
         </div>
         <div className='bg-[#d8d3d3] h-[1px] w-[80%] mx-auto my-2'></div>
         <div className='px-[20px]'>
             <div className=''>
-                <p className='text-[#666] text-[15px] text-center'>Ayuirvedic</p>
-                <h1 className='text-[black] py-1 font-[600]'>Nuturemite Amla Powder andihieo  febf fbeub </h1>
+                <p className='text-[#666] text-[15px] text-center'>{elm?.category[0]}</p>
+                <h1 className='text-[black] py-1 font-[600]'>{elm?.name} </h1>
             </div>
             <div className=''>
           
             <div className="flex flex-row items-center pt-0 absolute top-[5px] right-[5px] ">
-                          <div className="">3.5</div>
+                          <div className="">{elm?.ratings?.average}</div>
                           <div className="">⭐</div>
                         </div>
                       
@@ -153,10 +183,10 @@ const SimpleSlider = () => {
                         <div className="pt-1">
                           <div className="flex flex-row gap-3 items-center">
                             <h1 className="text-gray-500 text-[18px] line-through ">
-                              ₹{"625.00"}
+                              ₹{(elm?.price+45).toFixed(2)}
                             </h1>
                             <h1 className="text-red-600 text-[18px]  font-semibold">
-                              ₹{"300.00"}
+                              ₹{elm?.price.toFixed(2)}
                             </h1>
                           </div>
                         </div>
@@ -165,7 +195,7 @@ const SimpleSlider = () => {
                       <div className='p-2 border border-1'>
                       <FavoriteBorderIcon className="text-black hover:text-[red]   hover:font-[700] hover:scale-125 transition-colors duration-300" />
                       </div>
-                      <div className='p-2 border border-1'>
+                      <div className='p-2 border border-1'onClick={()=>{addToCart(elm._id)}}>
                       <ShoppingCartIcon className="text-black hover:text-[red]  hover:font-[700] hover:scale-125 transition-colors duration-300"/>
                       </div>
                       <div className='p-2 border border-1'>
@@ -193,10 +223,15 @@ const SimpleSlider = () => {
 ;
   
 
-function Weekspecial() {
+function Weekspecial({addToCart}) {
   const [path , setPath] = useState(window.location.href);
+  const {categoryType , setCategoryType , } = useContext(MyContext);
+
+
+
   useEffect(()=>{
     window.scrollTo(0, 0);
+   
   },[path])
   return (
     <>
@@ -205,7 +240,7 @@ function Weekspecial() {
         <h1 className='text-[#565656] text-[28px] font-600'>Trending Products</h1>
       </div>
          <div className='  py-4'>
-            <SimpleSlider/>
+            <SimpleSlider addToCart={addToCart}/>
          </div>
       </div>
     </>

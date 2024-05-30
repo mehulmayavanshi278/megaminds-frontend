@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-
 import Slider from "@mui/material/Slider";
 import Typography from "@mui/material/Typography";
 import Header from "../../components/Header";
@@ -17,14 +16,31 @@ import productService from "../../service/product.service";
 import CategoriesNavBar from "../../components/products/CategoriesNavBar";
 import cartService from "../../service/cart.service";
 import { toast } from "react-toastify";
-
+import tokenHelper from "../../Helper/tokenHelper";
+import userService from "../../service/user.service";
 
 function Product() {
-
-  const {categoryType , setCategoryType , products , setProducts , displayedProducts , setDisplayedProducts , productsLength , setProductsLength , setCartLength} = useContext(MyContext);
+  const {
+    categoryType,
+    setCategoryType,
+    products,
+    setProducts,
+    displayedProducts,
+    setDisplayedProducts,
+    productsLength,
+    setProductsLength,
+    setCartLength,
+    userData,
+    setUserData,
+    refresher,
+    setRefresher,
+    cartItems,
+    setCartItems,
+  } = useContext(MyContext);
+  const [cartItemtmp, setCartItemtmp] = useState();
   const [sortValue, setSortValue] = useState("");
 
-  const {path , setPath} = useContext(MyContext)
+  const { path, setPath } = useContext(MyContext);
 
   const handleSortChange = (event) => {
     setSortValue(event.target.value);
@@ -34,46 +50,91 @@ function Product() {
   const handleSliderChange = (event, newValue) => {
     setSortByPrice(newValue);
   };
-  const getProducts = async(type)=>{
-    try{
-      let query = `?type=${type}`
+  const getProducts = async (type) => {
+    try {
+      let query = `?type=${type}`;
       const res = await productService.getproducts(query);
-      if(res?.status===200){
+      if (res?.status === 200) {
         console.log(res.data);
-        setProducts([...res.data.data])
-        setDisplayedProducts([...res.data?.data].slice(0,8));
+        setProducts([...res.data.data]);
+        setDisplayedProducts([...res.data?.data].slice(0, 8));
         setProductsLength(res.data.length);
       }
-    }catch(err){
+    } catch (err) {
       console.log(err);
     }
-  }
-  const getCartItems = async()=>{
-    try{
-      const res = await cartService.getCartProducts();
-      if(res?.status===200){
-        setCartLength(res?.data?.length)
+  };
+  const addToCart = async (id) => {
+    try {
+      const res = await cartService.addToCart({ productId: id });
+      if (res?.status === 200) {
+        console.log(res?.data);
+        toast.success("One Item Added To Cart");
+        setCartLength(res.data?.cartItems?.length);
+        setRefresher(refresher+1);
+      } else if (res?.status === 201) {
+        console.log(res.data);
+        toast.success(res.data);
       }
-    }catch(err){
+    } catch (err) {
+      console.log(err);
+      if (err.response && err.response.status === 400) {
+        toast.error(err?.response?.data?.message);
+        return;
+     }
+    }
+  };
+  const getCartItems = async () => {
+    try {
+      const res = await cartService.getCartItems();
+      if (res?.status === 200) {
+        setCartItems([...res.data]);
+        const tmp = [...res.data].map((elm, id) => {
+          return { ...elm.productDetails, quantity: 1 };
+        });
+        console.log("tmp", tmp);
+        setCartItemtmp(tmp);
+        setCartLength(res.data.length);
+      }
+    } catch (err) {
       console.log(err);
     }
-  }
-  useEffect(()=>{
-        const cat = window.location.href;
+  };
+  const getUserData = async () => {
+    try {
+      const res = await userService.getUser();
+      if (res?.status === 200) {
+        console.log(res.data);
+        setUserData({ ...res.data });
+        setRefresher(refresher+1)
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    const cat = window.location.href;
     console.log(cat);
     if (cat.includes("/products")) {
       console.log(cat.split("products/")[1].split("%20").join(" "));
 
       // alert(cat.split("products/")[1].split("%20").join(" "))
-      const category = cat.split("products/")[1].split("%20").join(" ")
+      const category = cat.split("products/")[1].split("%20").join(" ");
       setCategoryType(category);
       getProducts(category);
-      getCartItems();
+      
+      tokenHelper.get() && getCartItems() && getUserData();
+      console.log("refreshing productscomponent")
     }
-  },[path , categoryType])
+  }, []);
+  useEffect(()=>{
+    
+  },[categoryType])
   return (
     <div>
-      <Header />
+      <Header   getCartProducts={getCartItems}
+        setCartItemtmp={setCartItemtmp}
+        cartItemtmp={cartItemtmp} />
 
       <div className="lg:px-[100px] md:px-[40px] px-[10px] py-5">
         <CategoriesNavBar />
@@ -91,7 +152,9 @@ function Product() {
                   <h1 className="text-[24px] text-black font font-[500]">
                     {categoryType}
                   </h1>
-                  <span className="text-[#666] text-[14px] font-[500] font-sans">({productsLength} Items)</span>
+                  <span className="text-[#666] text-[14px] font-[500] font-sans">
+                    ({productsLength} Items)
+                  </span>
                 </div>
 
                 <div className="">
@@ -106,17 +169,15 @@ function Product() {
                       valueLabelDisplay="auto"
                       min={100}
                       max={1000}
-                      sx={
-                        {
-                          padding:0,
-                            '& .MuiSlider-root': {
-                              padding: '0px'
-                            },
-                            '& .css-hdnczn-MuiSlider-root': {
-                              padding: '0px'
-                            }
-                        }
-                      }
+                      sx={{
+                        padding: 0,
+                        "& .MuiSlider-root": {
+                          padding: "0px",
+                        },
+                        "& .css-hdnczn-MuiSlider-root": {
+                          padding: "0px",
+                        },
+                      }}
                     />
                     <div className="flex flex-row justify-between">
                       <h1> {"100"}</h1>
@@ -174,35 +235,15 @@ function Product() {
                 </div>
               </div>
               <div className="bg-[#cbc7c7] h-[1px] my-2"></div>
-              {/* <div className="">
-                <ul className="flex flex-row justify-start gap-3">
-                  <li className="text-[12px] text-[#666] py-2 px-2 border border-1px border-grey ps-3 hover:text-red-500 cursor-pointer hover:bg-[#f1f1f1] rounded-[3px]">
-                    Antioxidants{" "}
-                    <span>
-                      <CloseIcon />
-                    </span>
-                  </li>
-                  <li className="text-[12px] text-[#666] py-2 px-2 border border-1px border-grey ps-3  hover:bg-[#f1f1f1] rounded-[3px]">
-                    Ayurvedic{" "}
-                    <span>
-                      <CloseIcon />
-                    </span>
-                  </li>
-                  <li className="text-[12px] text-[#666] py-2 px-2 border border-1px border-grey ps-3  hover:bg-[#f1f1f1] rounded-[3px]">
-                    under 500{" "}
-                    <span>
-                      <CloseIcon />
-                    </span>
-                  </li>
-                </ul>
-              </div> */}
-              <Cards />
+    
+              <Cards addToCart={addToCart}/>
             </div>
           </div>
         </div>
       </div>
+
       <div className="lg:px-[100px] md:px-[40px] p-[10px] bg-[#f1f1ff] pb-[50px]">
-        <Weekspecial />
+        <Weekspecial addToCart={addToCart}/>
         <Banner />
         <Latestblog />
       </div>

@@ -21,6 +21,9 @@ export const MyProvider = ({ children }) => {
   const [cartLength, setCartLength] = useState();
   const [cartItems, setCartItems] = useState();
   const [refresher, setRefresher] = useState(0);
+  const [trendingProducts, setTrendingProducts] = useState([]);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [openCart , setOpenCart] = useState(false);
 
   return (
     <MyContext.Provider
@@ -42,7 +45,13 @@ export const MyProvider = ({ children }) => {
         userData , 
         setUserData,
         refresher,
-        setRefresher
+        setRefresher,
+        trendingProducts,
+        setTrendingProducts,
+        recentlyViewed,
+        setRecentlyViewed,
+        openCart ,
+        setOpenCart
       }}
     >
       {children}

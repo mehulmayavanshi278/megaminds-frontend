@@ -15,15 +15,13 @@ class cartService{
         }
     }
     addToCart = async(body)=>{
-      try{
+
        return await axios.post(BaseURL+addToCartApi , body , {
         headers:{
             Authorization:tokenHelper.get()
         }
        });
-      }catch(err){
-        console.log(err);
-      }
+
     }
     updateCart = async(body)=>{
         try{

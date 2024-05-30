@@ -17,18 +17,32 @@ import { MyContext } from "../App";
 import cartService from "../service/cart.service";
 import axios from "axios";
 import tokenHelper from "../Helper/tokenHelper";
+import userService from "../service/user.service";
 
-function Header(props) {
+function Header({setCartItemtmp , cartItemtmp}) {
+
   const history = useNavigate();
-  const {cartLength , setCartLength ,cartItems , setCartItems , userData , setUserData , refresher , setRefresher} = useContext(MyContext);
+  const {
+    cartLength,
+    setCartLength,
+    cartItems,
+    setCartItems,
+    userData,
+    setUserData,
+    refresher,
+    setRefresher,
+    openCart ,
+    setOpenCart
+  } = useContext(MyContext);
   const [isOpenSearchBar, setIsOpenSearchBar] = useState(false);
   const [isOpenCart, setIsOpenCart] = useState(null);
   const [isOpenPopUp, setIsOpenPopUp] = useState(false);
   const [isOpenSignup, setIsOpenSignup] = useState(null);
   const [isOpenLogin, setIsOpenLogin] = useState(null);
+  const [totalPrice , setTotalPrice] = useState(0);
   const [search, setSearch] = useState("");
 
-  const [cartItemtmp , setCartItemtmp]  =  useState();
+
 
   const handleSearchOnChange = (e) => {
     setSearch(e.target.value);
@@ -57,95 +71,137 @@ function Header(props) {
     setIsOpenCart(false);
     setIsOpenSignup(false);
     setIsOpenLogin(false);
+    setOpenCart(false);
     document.body.style.overflow = "";
   };
 
-  const getCartProducts = async()=>{
-    try{
-        const res = await cartService.getCartItems();
-        if(res?.status===200){
-          console.log(res.data);
-          
-          setCartItems([...res.data]);
-          const tmp=[...res.data].map((elm , id)=>{
-            return {...elm.productDetails , quantity:1}
-          });
-          console.log("tmp" , tmp);
-          setCartItemtmp(tmp);
-          setCartLength(res.data.length);
-        }
-    }catch(err){
-      if (err.response && err.response.status === 400) {
-        toast.error(err?.response?.data?.message);
-        return;
-     }
-      console.log(err);
-    }
-  }
+ 
 
-  const handleRemoveFromCart = async(id)=>{
-     try{ 
+
+  const handleRemoveFromCart = async (id) => {
+    try {
       console.log(id);
       const res = await cartService.removeFromCart(id);
-      if(res?.status===200){
+      if (res?.status === 200) {
         console.log(res.data);
         setCartItems([...res.data]);
-        setCartLength(res.data.length)
+        setCartLength(res.data.length);
         toast.success("Removed From Cart");
+        const totalpriceCount = res?.data?.reduce((acc, elm) => acc + (elm?.productDetails?.price || 0), 0);
+        setTotalPrice(totalpriceCount);
       }
-     }catch(err){
+    } catch (err) {
       console.log(err);
       if (err.response && err.response.status === 400) {
         toast.error(err?.response?.data?.message);
         return;
-     }
-     }
-  }
-
-
-  const inCrement = (id)=>{
-    console.log(id)
-    const updatedCartItems = [...cartItemtmp]; // Create a copy of the cart items array
-  updatedCartItems[id] = { ...updatedCartItems[id], quantity: Math.min(8 , updatedCartItems[id].quantity + 1 )};
-  setCartItemtmp([...updatedCartItems]);
-  }
-  const decrement = (id)=>{
-    const updatedCartItems = [...cartItemtmp]; // Create a copy of the cart items array
-  updatedCartItems[id] = { ...updatedCartItems[id], quantity: Math.max(1 , updatedCartItems[id].quantity - 1) };
-  setCartItemtmp([...updatedCartItems]);
-  }
-
-  const handleCheckout = async()=>{
-    try{
-
-      console.log(cartItemtmp)
-        const res = await axios.post("http://localhost:5000/order/create-checkout-session" , {
-          cartItems:cartItemtmp,
-        },{
-          headers:{
-            Authorization:tokenHelper.get()
-          }
-        });
-        if(res?.data?.url){
-            window.location.href=res.data.url
-        }
-    }catch(err){
-        console.log(err);
+      }
     }
+  };
 
-}
-const handleLogout = async()=>{
-   tokenHelper.delete("token");
-   setRefresher(refresher+1);
-}
+  const inCrement = (id) => {
+    console.log(id);
+    console.log()
+
+
+    const updatedCartItems = [...cartItemtmp]; // Create a copy of the cart items array
+    const min = Math.min(8, updatedCartItems[id].quantity + 1)
+    if(updatedCartItems[id].quantity+1<=8){
+      setTotalPrice(totalPrice+cartItemtmp[id]?.price);
+    }
+    updatedCartItems[id] = {
+      ...updatedCartItems[id],
+      quantity: min,
+    };
+    setCartItemtmp([...updatedCartItems]);
+  };
+  const decrement = (id) => {
+
+    const updatedCartItems = [...cartItemtmp]; // Create a copy of the cart items array
+    if(updatedCartItems[id].quantity-1>=1){
+      setTotalPrice(totalPrice-cartItemtmp[id]?.price);
+    }
+    updatedCartItems[id] = {
+      ...updatedCartItems[id],
+      quantity: Math.max(1, updatedCartItems[id].quantity - 1),
+    };
+    setCartItemtmp([...updatedCartItems]);
+  };
+
+  const handleCheckout = async () => {
+    try {
+      console.log(cartItemtmp);
+      const res = await axios.post(
+        "http://localhost:5000/order/create-checkout-session",
+        {
+          cartItems: cartItemtmp,
+        },
+        {
+          headers: {
+            Authorization: tokenHelper.get(),
+          },
+        }
+      );
+      if (res?.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleLogout = async () => {
+    tokenHelper.delete("token");
+    setUserData(null);
+    setCartLength(0);
+    setRefresher(refresher + 1);
+  };
+
+  const getCartItems = async () => {
+    try {
+      const res = await cartService.getCartItems();
+      if (res?.status === 200) {
+        setCartItems([...res.data]);
+        const tmp = [...res.data].map((elm, id) => {
+          return { ...elm.productDetails, quantity: 1 };
+        });
+        const totalpriceCount = res?.data?.reduce((acc, elm) => acc + (elm?.productDetails?.price || 0), 0);
+setTotalPrice(totalpriceCount);
+        console.log("tmp", tmp);
+        setCartItemtmp(tmp);
+        setCartLength(res.data.length);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const getUserData = async()=>{
+    try{
+     const res = await userService.getUser();
+     console.log(res.data)
+     if(res?.status===200) setUserData(res.data);
+    }catch(err){
+      console.log(err);
+    }
+  }
   useEffect(() => {
-   tokenHelper.get() && getCartProducts();
+    tokenHelper.get() && getCartItems() && getUserData();
+   
+    console.log("refrshing the component header...");
   }, [refresher]);
+
+  useEffect(() => {
+    if (openCart) {
+      openCartPopUp();
+    }
+  }, [openCart]);
+ useEffect(()=>{
+  console.log("cartlength" , cartLength)
+ },[]);
   return (
     <div>
       <div
         className={`absolute h-full w-full ${
-          isOpenCart ? "z-30" : ""
+          isOpenCart? "z-30" : ""
         } z-10 bg-[#2e2b2b] opacity-[0.6] ${isOpenPopUp ? "block" : "hidden"}`}
         onClick={closePopUp}
       ></div>
@@ -257,8 +313,13 @@ const handleLogout = async()=>{
                   </li>
                   <li className="group p-2 px-[25px] border border-solid text-white text-[14px] hover:bg-black relative rounded-[5px] rounded-bl-none rounded-br-none">
                     <div className="absolute z-[5] top-[44px] right-0 w-[250px] py-[25px] bg-black rounded-[5px] hidden group-hover:block">
-                      <div className="flex flex-row gap-3 py-2 hover:bg-[#252121] cursor-pointer px-[25px]" onClick={()=>{history("/myaccount")}}>
-                        <AccountCircleIcon style={{ fontSize: "20px" }}  />
+                      <div
+                        className="flex flex-row gap-3 py-2 hover:bg-[#252121] cursor-pointer px-[25px]"
+                        onClick={() => {
+                          history("/myaccount");
+                        }}
+                      >
+                        <AccountCircleIcon style={{ fontSize: "20px" }} />
                         <p> Your Account </p>
                       </div>
                       <div className="flex flex-row gap-3 py-2 hover:bg-[#252121] cursor-pointer px-[25px]">
@@ -266,37 +327,41 @@ const handleLogout = async()=>{
                         <p>Your wishlists</p>
                       </div>
                       <div className="h-[1px] bg-[#7f7e7e] mt-[25px]"></div>
-                      {!userData?.firstName && <div className="mt-3">
-                        <p className="text-[#8a7171] text-[12px] text-center">
-                          if you are new user?
-                        </p>
-                        <p
-                          className="text-[#c4c2c2] text-[15px] text-center hover:underline cursor-pointer"
-                          onClick={openSignupPopUp}
-                        >
-                          Register
-                        </p>
-                      </div>}
-                     { !userData?.firstName ? <div className="px-[20px] mt-2">
-                        <button
-                          className="w-full py-2 bg-[red] rounded-[3px] text-center hover:bg-[#e14c4c]"
-                          onClick={openLoginPopUp}
-                        >
-                          Login
-                        </button>
-                      </div>
-                      :
-                      <div className="px-[20px] mt-2">
-                        <button
-                          className="w-full py-2 bg-[red] rounded-[3px] text-center hover:bg-[#e14c4c]"
-                          onClick={handleLogout}
-                        >
-                          Logout
-                        </button>
-                      </div>
-                     }
+                      {!userData?.firstName && (
+                        <div className="mt-3">
+                          <p className="text-[#8a7171] text-[12px] text-center">
+                            if you are new user?
+                          </p>
+                          <p
+                            className="text-[#c4c2c2] text-[15px] text-center hover:underline cursor-pointer"
+                            onClick={openSignupPopUp}
+                          >
+                            Register
+                          </p>
+                        </div>
+                      )}
+                      {!userData?.firstName ? (
+                        <div className="px-[20px] mt-2">
+                          <button
+                            className="w-full py-2 bg-[red] rounded-[3px] text-center hover:bg-[#e14c4c]"
+                            onClick={openLoginPopUp}
+                          >
+                            Login
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="px-[20px] mt-2">
+                          <button
+                            className="w-full py-2 bg-[red] rounded-[3px] text-center hover:bg-[#e14c4c]"
+                            onClick={handleLogout}
+                          >
+                            Logout
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    <AccountCircleIcon style={{ fontSize: "30px" }} /> {userData?.firstName ||  "signUp" }
+                    <AccountCircleIcon style={{ fontSize: "30px" }} />{" "}
+                    {userData?.firstName || "signUp"}
                   </li>
                 </ul>
               </div>
@@ -335,57 +400,76 @@ const handleLogout = async()=>{
                     <th className="pt-5"></th>
                   </tr>
 
-                { cartItems?.map((elm,id)=>{
-                  return(
-                    <>
-                    <tr key={id}>
-                    <td className="text-start  pt-5">
-                      <div className="  flex flex-row">
-                        <div className="w-[100px] h-[100px]">
-                          <img
-                            className="w-full h-full object-cover"
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPxfrd4wI6J8H-TTm5xSWZXPglddGveslM8Og3I4u_bA&s"
-                            alt=""
-                          />
-                        </div>
-                        <div className="ps-[30px]">
-                          <h1 className="text-black font-sans font-[600]">
-                            {elm?.proproductDetails?.name}
-                          </h1>
-                          <p className="text-[#666] text-[14px] pt-1">
-                            {elm?.productDetails['category'][0]}
-                          </p>
-                          <p className="text-[red] font-sans font-[500] pt-2 hover:underline cursor-pointer "onClick={()=>{handleRemoveFromCart(elm._id)}}>
-                            Remove <CloseIcon />
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="text-center pt-5 flex flex-row gap-3 justify-center items-center">
-                      <RemoveIcon onClick={()=>{decrement(id)}} className="cursor-pointer" />
-                      <p className="border border-1 w-[35px] h-[35px] flex justify-center items-center text-black font-sans font-[700]">
-                        {cartItemtmp && cartItemtmp[id]['quantity']}
-                      </p>
-                      <AddIcon onClick={()=>{inCrement(id)}}  className="cursor-pointer" />
-                    </td>
-                    <td className="text-center align-top pt-5 text-black font-sans font-[700]">
-                    ₹{elm?.productDetails?.price}
-                    </td>
-                    <td className="text-center align-top pt-5  text-black font-sans font-[700]">
-                      <button>₹{((elm?.productDetails?.price * cartItemtmp[id]['quantity']) ).toFixed(2)}</button>
-                    </td>
-                  </tr>
-                    </>
-                  )
-                }) 
-                  }
-   
+                  {cartItems?.map((elm, id) => {
+                    return (
+                      <>
+                        <tr key={id}>
+                          <td className="text-start  pt-5">
+                            <div className="  flex flex-row">
+                              <div className="w-[100px] h-[100px]">
+                                <img
+                                  className="w-full h-full object-cover"
+                                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPxfrd4wI6J8H-TTm5xSWZXPglddGveslM8Og3I4u_bA&s"
+                                  alt=""
+                                />
+                              </div>
+                              <div className="ps-[30px]">
+                                <h1 className="text-black font-sans font-[600]">
+                                  {elm?.proproductDetails?.name}
+                                </h1>
+                                <p className="text-[#666] text-[14px] pt-1">
+                                  {elm?.productDetails["category"][0]}
+                                </p>
+                                <p
+                                  className="text-[red] font-sans font-[500] pt-2 hover:underline cursor-pointer "
+                                  onClick={() => {
+                                    handleRemoveFromCart(elm._id);
+                                  }}
+                                >
+                                  Remove <CloseIcon />
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="text-center pt-5 flex flex-row gap-3 justify-center items-center">
+                            <RemoveIcon
+                              onClick={() => {
+                                decrement(id);
+                              }}
+                              className="cursor-pointer"
+                            />
+                            <p className="border border-1 w-[35px] h-[35px] flex justify-center items-center text-black font-sans font-[700]">
+                              {cartItemtmp && cartItemtmp[id]["quantity"]}
+                            </p>
+                            <AddIcon
+                              onClick={() => {
+                                inCrement(id);
+                              }}
+                              className="cursor-pointer"
+                            />
+                          </td>
+                          <td className="text-center align-top pt-5 text-black font-sans font-[700]">
+                            ₹{elm?.productDetails?.price}
+                          </td>
+                          <td className="text-center align-top pt-5  text-black font-sans font-[700]">
+                            <button>
+                              ₹
+                              {(
+                                elm?.productDetails?.price *
+                                cartItemtmp[id]["quantity"]
+                              ).toFixed(2)}
+                            </button>
+                          </td>
+                        </tr>
+                      </>
+                    );
+                  })}
 
                   <tr>
                     <th className="pt-5"></th>
                     <th className="pt-5"></th>
                     <th className="pt-5"></th>
-                    <th className="pt-5 text-[700] text-[22px]">Total 600</th>
+                    <th className="pt-5 text-[700] text-[22px]">Total {totalPrice.toFixed(2)}</th>
                   </tr>
                 </tbody>
               </table>
@@ -415,7 +499,7 @@ const handleLogout = async()=>{
       )}
       {isOpenLogin && (
         <div className="">
-          <Login closePopUp={closePopUp}/>
+          <Login closePopUp={closePopUp} />
         </div>
       )}
     </div>

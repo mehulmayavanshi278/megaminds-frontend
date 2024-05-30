@@ -8,7 +8,7 @@ import { MyContext } from "../../App";
 import cartService from "../../service/cart.service";
 import { toast } from "react-toastify";
 
-function Cards() {
+function Cards({addToCart}) {
   const history = useNavigate();
   const [page, setPage] = useState(1);
   const {
@@ -18,6 +18,8 @@ function Cards() {
     setDisplayedProducts,
     path,
     setCartLength,
+    refresher,
+    setRefresher
   } = useContext(MyContext);
 
   const handleSetPagination = (value) => {
@@ -30,25 +32,7 @@ function Cards() {
     setDisplayedProducts(products.slice((value - 1) * 8, value * 8));
   };
 
-  const addToCart = async (id) => {
-    try {
-      const res = await cartService.addToCart({ productId: id });
-      if (res?.status === 200) {
-        console.log(res?.data);
-        toast.success("One Item Added To Cart");
-        setCartLength(res.data?.cartItems?.length);
-      } else if (res?.status === 201) {
-        console.log(res.data);
-        toast.success(res.data);
-      }
-    } catch (err) {
-      console.log(err);
-      if (err.response && err.response.status === 400) {
-        toast.error(err?.response?.data?.message);
-        return;
-     }
-    }
-  };
+
 
   useEffect(() => {}, []);
 
@@ -84,7 +68,7 @@ function Cards() {
                 </div>
                 <div className="">
                   <div className="flex flex-row items-center pt-0 absolute top-[5px] right-[5px] ">
-                    <div className="">3.5</div>
+                    <div className="">{elm?.ratings?.average}</div>
                     <div className="">⭐</div>
                   </div>
 

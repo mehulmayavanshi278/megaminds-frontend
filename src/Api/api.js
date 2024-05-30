@@ -11,6 +11,8 @@ const deleteUserApi="/user/delete"
 
 
 const getProductsApi="/product/getProducts";
+const getSingleProductApi="/product/getproduct";
+const getrandomProductsApi = "/product/getRandomProducts"
 
 const getCartApi = "/cart/getcart";
 const addToCartApi = "/cart/create";
@@ -25,6 +27,8 @@ export {BaseURL,
     updateUserApi,
     loginWithGoogleApi,
     getProductsApi,
+    getSingleProductApi,
+    getrandomProductsApi,
     getUserApi,
     deleteUserApi,
     getCartApi,

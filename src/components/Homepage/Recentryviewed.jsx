@@ -1,13 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import { NextArrow, PreviousArrow } from '../products/Weekspecial';
 import { useNavigate } from 'react-router-dom';
+import { MyContext } from '../../App';
 
 function Recentryviewed() {
 
 
+  const {recentlyViewed , setRecentlyViewed} = useContext(MyContext)
   const history = useNavigate();
 
     const settings = {

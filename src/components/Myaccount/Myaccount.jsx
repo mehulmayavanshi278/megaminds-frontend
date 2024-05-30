@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import userService from '../../service/user.service';
 import { MyContext } from '../../App';
 import { toast } from 'react-toastify';
+import cartService from '../../service/cart.service';
 const states = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
     "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", 
@@ -348,6 +349,26 @@ const Orders  =()=>{
 }
 
 function Myaccount() {
+
+
+  const {
+    categoryType,
+    setCategoryType,
+    products,
+    setProducts,
+    displayedProducts,
+    setDisplayedProducts,
+    productsLength,
+    setProductsLength,
+    setCartLength,
+    userData,
+    setUserData,
+    refresher,
+    setRefresher,
+    cartItems,
+    setCartItems,
+  } = useContext(MyContext);
+  const [cartItemtmp, setCartItemtmp] = useState();
  const [option , setOption] = useState("AccDetails");
  const options = [
     "AccDetails",
@@ -360,7 +381,6 @@ function Myaccount() {
 
 
 
- const {userData , setUserData} = useContext(MyContext)
  const getUserData=async()=>{
    try{
      const res = await userService.getUser();
@@ -377,13 +397,31 @@ function Myaccount() {
    }
  }
 
+ const getCartItems = async () => {
+  try {
+    const res = await cartService.getCartItems();
+    if (res?.status === 200) {
+      setCartItems([...res.data]);
+      const tmp = [...res.data].map((elm, id) => {
+        return { ...elm.productDetails, quantity: 1 };
+      });
+      console.log("tmp", tmp);
+      setCartItemtmp(tmp);
+      setCartLength(res.data.length);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
  useEffect(()=>{
   getUserData();
  },[])
  
   return (
     <>
-      <Header />
+      <Header getCartProducts={getCartItems}
+        setCartItemtmp={setCartItemtmp}
+        cartItemtmp={cartItemtmp}/>
 
 
 
