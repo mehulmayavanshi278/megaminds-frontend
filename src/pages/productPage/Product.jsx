@@ -42,17 +42,26 @@ function Product() {
 
   const { path, setPath } = useContext(MyContext);
 
-  const handleSortChange = (event) => {
+  const handleSortChange = async (event) => {
     setSortValue(event.target.value);
+    let tmppath = path + "&sort=" + event.target.value;
+    await getProducts(tmppath);
   };
   const [sortByPrice, setSortByPrice] = useState(1000);
 
   const handleSliderChange = (event, newValue) => {
     setSortByPrice(newValue);
   };
+  const handleSliderChangeCommitted = async (event, newValue) => {
+    console.log(newValue);
+    console.log(path);
+    const tempPath = path + `&price=${newValue}`;
+    await getProducts(tempPath);
+  };
+
   const getProducts = async (type) => {
     try {
-      let query = `?type=${type}`;
+      let query = type;
       const res = await productService.getproducts(query);
       if (res?.status === 200) {
         console.log(res.data);
@@ -71,7 +80,7 @@ function Product() {
         console.log(res?.data);
         toast.success("One Item Added To Cart");
         setCartLength(res.data?.cartItems?.length);
-        setRefresher(refresher+1);
+        setRefresher(refresher + 1);
       } else if (res?.status === 201) {
         console.log(res.data);
         toast.success(res.data);
@@ -81,7 +90,7 @@ function Product() {
       if (err.response && err.response.status === 400) {
         toast.error(err?.response?.data?.message);
         return;
-     }
+      }
     }
   };
   const getCartItems = async () => {
@@ -106,7 +115,7 @@ function Product() {
       if (res?.status === 200) {
         console.log(res.data);
         setUserData({ ...res.data });
-        setRefresher(refresher+1)
+        setRefresher(refresher + 1);
       }
     } catch (err) {
       console.log(err);
@@ -119,22 +128,23 @@ function Product() {
       console.log(cat.split("products/")[1].split("%20").join(" "));
 
       // alert(cat.split("products/")[1].split("%20").join(" "))
-      const category = cat.split("products/")[1].split("%20").join(" ");
+      let category = cat.split("products/")[1].split("%20").join(" ");
       setCategoryType(category);
-      getProducts(category);
-      
+      const path = `?type=${category}`;
+      getProducts(path);
+      setPath(path);
       tokenHelper.get() && getCartItems() && getUserData();
-      console.log("refreshing productscomponent")
+      console.log("refreshing productscomponent");
     }
   }, []);
-  useEffect(()=>{
-    
-  },[categoryType])
+  useEffect(() => {}, [categoryType]);
   return (
     <div>
-      <Header   getCartProducts={getCartItems}
+      <Header
+        getCartProducts={getCartItems}
         setCartItemtmp={setCartItemtmp}
-        cartItemtmp={cartItemtmp} />
+        cartItemtmp={cartItemtmp}
+      />
 
       <div className="lg:px-[100px] md:px-[40px] px-[10px] py-5">
         <CategoriesNavBar />
@@ -165,10 +175,11 @@ function Product() {
                     <Slider
                       value={sortByPrice}
                       onChange={handleSliderChange}
+                      onChangeCommitted={handleSliderChangeCommitted}
                       aria-labelledby="price-range-slider"
                       valueLabelDisplay="auto"
-                      min={100}
-                      max={1000}
+                      min={1}
+                      max={300}
                       sx={{
                         padding: 0,
                         "& .MuiSlider-root": {
@@ -235,15 +246,15 @@ function Product() {
                 </div>
               </div>
               <div className="bg-[#cbc7c7] h-[1px] my-2"></div>
-    
-              <Cards addToCart={addToCart}/>
+
+              <Cards addToCart={addToCart} />
             </div>
           </div>
         </div>
       </div>
 
       <div className="lg:px-[100px] md:px-[40px] p-[10px] bg-[#f1f1ff] pb-[50px]">
-        <Weekspecial addToCart={addToCart}/>
+        <Weekspecial addToCart={addToCart} />
         <Banner />
         <Latestblog />
       </div>

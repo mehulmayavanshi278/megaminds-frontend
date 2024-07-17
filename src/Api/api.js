@@ -1,5 +1,5 @@
-// const BaseURL="http://localhost:5000";
-const BaseURL="https://megaminds-backend.onrender.com";
+const BaseURL="http://localhost:5000";
+// const BaseURL="https://megaminds-backend.onrender.com";
 
 const registerApi = "/user/create";
 const loginApi = "/user/login";
@@ -13,6 +13,15 @@ const deleteUserApi="/user/delete"
 const getProductsApi="/product/getProducts";
 const getSingleProductApi="/product/getproduct";
 const getrandomProductsApi = "/product/getRandomProducts"
+const getReviewsApi = "/product/getReviews"
+const getRepliesApi = "/product/getReplies"
+const giveRatingApi = "/product/giveRating"
+const getSingleRatingApi = "/product/getSingleRating"
+const createReviewApi = "/product/createReview"
+const addReplyApi = "/product/addReply"
+const deleteReviewApi = "/product/deleteReview"
+const deleteReplyApi = "/product/deleteReply"
+
 
 const getCartApi = "/cart/getcart";
 const addToCartApi = "/cart/create";
@@ -34,5 +43,13 @@ export {BaseURL,
     getCartApi,
     addToCartApi,
     updateCartApi,
-    removeFromCartApi}
+    removeFromCartApi,
+    getReviewsApi,
+    getRepliesApi,
+    getSingleRatingApi,
+    giveRatingApi,
+    createReviewApi,
+addReplyApi,
+deleteReviewApi,
+deleteReplyApi}
 

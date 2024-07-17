@@ -212,10 +212,10 @@ function Homepage() {
               <div className="border md:none xl-block bg-[white] shadow-lg border-1px p-3">
                 <div className="">
                   <p className="text-[#666] text-[15px]">Your Cart</p>
-                  <p className="text-[#666] text-[14px] font-[600]">
+                  {tokenHelper.get() && <p className="text-[#666] text-[14px] font-[600]">
                     {" "}
                     there are {cartLength} items in your cart
-                  </p>
+                  </p>}
                 </div>
 
                 {cartItems?.slice(0, 1)?.map((elm, id) => {
@@ -228,7 +228,7 @@ function Homepage() {
                         <div className="w-[60px] h-[80px]">
                           <img
                             className="w-full h-full object-cover"
-                            src="https://th.bing.com/th/id/OIG4.LgUj9FIjzUbdTSMn0mRg"
+                            src={elm?.productDetails?.images[0] || ''}
                             alt=""
                           />
                         </div>
@@ -246,7 +246,7 @@ function Homepage() {
                 })}
 
                 <div className="">
-                  {cartLength !== 0 && (
+                  {cartLength && cartLength !== 0 && (
                     <div className="text-center bg-[black] rounded-[3px] py-2 cursor-pointer hover:bg-[#494141]">
                       <h1
                         className="text-white text-[16px]"
@@ -268,7 +268,7 @@ function Homepage() {
 
               <div className=" pb-3 ">
                 <div className="">
-                  <Recentryviewed />
+                  <Recentryviewed addToCart={addToCart} />
                 </div>
               </div>
             </div>

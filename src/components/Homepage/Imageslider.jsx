@@ -39,6 +39,11 @@ function Imageslider() {
 
   };
 
+  const images=[
+              'https://img.freepik.com/free-vector/horizontal-sale-banner-template_23-2148897327.jpg?w=1060&t=st=1718631916~exp=1718632516~hmac=df5d6f48de28528d62f6878d6b817f4bb175bced6cb5e7437cd6222090c3eb4c',
+              'https://media.istockphoto.com/id/1360515688/vector/welcome-text-ribbon-banner-vector-design.jpg?s=1024x1024&w=is&k=20&c=ryPgweCGbOpdWdPyj6BArOHcfXVD93fMeBvKxbeJbEc='
+  ]
+
   return (
     <>
 
@@ -46,7 +51,7 @@ function Imageslider() {
 
    
       <Slider {...settings}>
-        {Array.from({ length: 4 }, (id) => {
+        {images?.map((elm,id) => {
           return (
             <>
               <div key={id} className="w-full md:h-[300px] h-[240px]">
@@ -54,7 +59,7 @@ function Imageslider() {
                   <img
                     className="w-full h-full object-cover rounded-[5px]"
                     // src="https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630"
-                    src="https://th.bing.com/th/id/OIG4.LgUj9FIjzUbdTSMn0mRg"
+                    src={elm}
                     alt=""
                   />
                 </div>

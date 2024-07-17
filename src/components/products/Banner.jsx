@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { NextArrow, PreviousArrow } from "./Weekspecial";
+import productService from "../../service/product.service";
+import { MyContext } from "../../App";
 
-function Banner() {
+function Banner({addToCart}) {
   const settings = {
       dots: true,
     infinite: true, // Infinite loop sliding
@@ -16,6 +18,8 @@ function Banner() {
     nextArrow: <NextArrow />,
     prevArrow: <PreviousArrow />,
   };
+
+
 
   return (
     <>
@@ -31,7 +35,7 @@ function Banner() {
                 <div className="">
                   <img
                     className="w-full h-full object-cover rounded-[5px]"
-                    src="https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630"
+                    src='https://www.shutterstock.com/image-vector/ecommerce-website-banner-template-presents-260nw-2252124451.jpg'
                     alt=""
                   />
                 </div>

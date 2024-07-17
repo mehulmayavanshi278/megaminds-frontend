@@ -19,8 +19,7 @@ import axios from "axios";
 import tokenHelper from "../Helper/tokenHelper";
 import userService from "../service/user.service";
 
-function Header({setCartItemtmp , cartItemtmp}) {
-
+function Header({ setCartItemtmp, cartItemtmp }) {
   const history = useNavigate();
   const {
     cartLength,
@@ -31,18 +30,16 @@ function Header({setCartItemtmp , cartItemtmp}) {
     setUserData,
     refresher,
     setRefresher,
-    openCart ,
-    setOpenCart
+    openCart,
+    setOpenCart,
   } = useContext(MyContext);
   const [isOpenSearchBar, setIsOpenSearchBar] = useState(false);
   const [isOpenCart, setIsOpenCart] = useState(null);
   const [isOpenPopUp, setIsOpenPopUp] = useState(false);
   const [isOpenSignup, setIsOpenSignup] = useState(null);
   const [isOpenLogin, setIsOpenLogin] = useState(null);
-  const [totalPrice , setTotalPrice] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
   const [search, setSearch] = useState("");
-
-
 
   const handleSearchOnChange = (e) => {
     setSearch(e.target.value);
@@ -75,9 +72,6 @@ function Header({setCartItemtmp , cartItemtmp}) {
     document.body.style.overflow = "";
   };
 
- 
-
-
   const handleRemoveFromCart = async (id) => {
     try {
       console.log(id);
@@ -87,7 +81,10 @@ function Header({setCartItemtmp , cartItemtmp}) {
         setCartItems([...res.data]);
         setCartLength(res.data.length);
         toast.success("Removed From Cart");
-        const totalpriceCount = res?.data?.reduce((acc, elm) => acc + (elm?.productDetails?.price || 0), 0);
+        const totalpriceCount = res?.data?.reduce(
+          (acc, elm) => acc + (elm?.productDetails?.price || 0),
+          0
+        );
         setTotalPrice(totalpriceCount);
       }
     } catch (err) {
@@ -101,13 +98,12 @@ function Header({setCartItemtmp , cartItemtmp}) {
 
   const inCrement = (id) => {
     console.log(id);
-    console.log()
-
+    console.log();
 
     const updatedCartItems = [...cartItemtmp]; // Create a copy of the cart items array
-    const min = Math.min(8, updatedCartItems[id].quantity + 1)
-    if(updatedCartItems[id].quantity+1<=8){
-      setTotalPrice(totalPrice+cartItemtmp[id]?.price);
+    const min = Math.min(8, updatedCartItems[id].quantity + 1);
+    if (updatedCartItems[id].quantity + 1 <= 8) {
+      setTotalPrice(totalPrice + cartItemtmp[id]?.price);
     }
     updatedCartItems[id] = {
       ...updatedCartItems[id],
@@ -116,10 +112,9 @@ function Header({setCartItemtmp , cartItemtmp}) {
     setCartItemtmp([...updatedCartItems]);
   };
   const decrement = (id) => {
-
     const updatedCartItems = [...cartItemtmp]; // Create a copy of the cart items array
-    if(updatedCartItems[id].quantity-1>=1){
-      setTotalPrice(totalPrice-cartItemtmp[id]?.price);
+    if (updatedCartItems[id].quantity - 1 >= 1) {
+      setTotalPrice(totalPrice - cartItemtmp[id]?.price);
     }
     updatedCartItems[id] = {
       ...updatedCartItems[id],
@@ -135,6 +130,7 @@ function Header({setCartItemtmp , cartItemtmp}) {
         "http://localhost:5000/order/create-checkout-session",
         {
           cartItems: cartItemtmp,
+          totalPrice: totalPrice,
         },
         {
           headers: {
@@ -164,8 +160,11 @@ function Header({setCartItemtmp , cartItemtmp}) {
         const tmp = [...res.data].map((elm, id) => {
           return { ...elm.productDetails, quantity: 1 };
         });
-        const totalpriceCount = res?.data?.reduce((acc, elm) => acc + (elm?.productDetails?.price || 0), 0);
-setTotalPrice(totalpriceCount);
+        const totalpriceCount = res?.data?.reduce(
+          (acc, elm) => acc + (elm?.productDetails?.price || 0),
+          0
+        );
+        setTotalPrice(totalpriceCount);
         console.log("tmp", tmp);
         setCartItemtmp(tmp);
         setCartLength(res.data.length);
@@ -174,18 +173,18 @@ setTotalPrice(totalpriceCount);
       console.log(err);
     }
   };
-  const getUserData = async()=>{
-    try{
-     const res = await userService.getUser();
-     console.log(res.data)
-     if(res?.status===200) setUserData(res.data);
-    }catch(err){
+  const getUserData = async () => {
+    try {
+      const res = await userService.getUser();
+      console.log(res.data);
+      if (res?.status === 200) setUserData(res.data);
+    } catch (err) {
       console.log(err);
     }
-  }
+  };
   useEffect(() => {
     tokenHelper.get() && getCartItems() && getUserData();
-   
+
     console.log("refrshing the component header...");
   }, [refresher]);
 
@@ -194,14 +193,14 @@ setTotalPrice(totalpriceCount);
       openCartPopUp();
     }
   }, [openCart]);
- useEffect(()=>{
-  console.log("cartlength" , cartLength)
- },[]);
+  useEffect(() => {
+    console.log("cartlength", cartLength);
+  }, []);
   return (
     <div>
       <div
         className={`absolute h-full w-full ${
-          isOpenCart? "z-30" : ""
+          isOpenCart ? "z-30" : ""
         } z-10 bg-[#2e2b2b] opacity-[0.6] ${isOpenPopUp ? "block" : "hidden"}`}
         onClick={closePopUp}
       ></div>
@@ -469,7 +468,9 @@ setTotalPrice(totalpriceCount);
                     <th className="pt-5"></th>
                     <th className="pt-5"></th>
                     <th className="pt-5"></th>
-                    <th className="pt-5 text-[700] text-[22px]">Total {totalPrice.toFixed(2)}</th>
+                    <th className="pt-5 text-[700] text-[22px]">
+                      Total {totalPrice.toFixed(2)}
+                    </th>
                   </tr>
                 </tbody>
               </table>

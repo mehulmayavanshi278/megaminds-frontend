@@ -76,7 +76,7 @@ function App() {
           <Route path="/myaccount" element={<Myaccount />}></Route>
           <Route path="/signup" element={<Signup />}></Route>
           <Route path="/cart" element={<Cart />}></Route>
-          <Route path="/checkout-success" element={<Success />}></Route>
+          <Route path="/checkout-success/:id" element={<Success />}></Route>
         </Routes>
       </MyProvider>
     </BrowserRouter>

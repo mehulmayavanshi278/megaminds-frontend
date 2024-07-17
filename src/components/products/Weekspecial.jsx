@@ -163,14 +163,14 @@ const SimpleSlider = ({addToCart}) => {
                 return(
                     <>
                     <div key={Date.now()+id} className='w-[250px] relative pb-4 bg-[white] shadow-normal hover:shadow-custom rounded-[5px] mt-3 mb-3 mx-auto'>
-        <div className='w-[130px] mx-auto h-[150px]  ' onClick={()=>{handleNavigate(elm._id)}}>
-            <img className='w-full h-full object-cover' src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1656077250-13442792-1424913539756896.jpg?crop=1xw:1.00xh;center,top&resize=980:*" alt=''/>
+        <div className='w-[130px] mx-auto py-[20px] h-[150px]  ' onClick={()=>{handleNavigate(elm._id)}}>
+            <img className='w-full h-full object-cover' src={elm?.images[0]} alt=''/>
         </div>
         <div className='bg-[#d8d3d3] h-[1px] w-[80%] mx-auto my-2'></div>
         <div className='px-[20px]'>
             <div className=''>
                 <p className='text-[#666] text-[15px] text-center'>{elm?.category[0]}</p>
-                <h1 className='text-[black] py-1 font-[600]'>{elm?.name} </h1>
+                <h1 className='text-[black] py-1 font-[600]'>{elm?.name?.slice(0,23)} </h1>
             </div>
             <div className=''>
           
