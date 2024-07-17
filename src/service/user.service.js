@@ -20,11 +20,7 @@ class userService {
   signup = async (data) => {
     try {
       console.log("hg", data);
-      return await axios.post(BaseURL + registerApi, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      return await axios.post(BaseURL + registerApi, data);
     } catch (err) {
       console.log(err);
     }
