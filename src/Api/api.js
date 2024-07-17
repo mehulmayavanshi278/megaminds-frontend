@@ -1,5 +1,5 @@
-const BaseURL="http://localhost:5000";
-// const BaseURL="https://megaminds-backend.onrender.com";
+// const BaseURL="http://localhost:5000";
+const BaseURL="https://megaminds-backend.onrender.com";
 
 const registerApi = "/user/create";
 const loginApi = "/user/login";
