@@ -41,7 +41,7 @@ function Imageslider() {
 
   const images=[
               'https://img.freepik.com/free-vector/horizontal-sale-banner-template_23-2148897327.jpg?w=1060&t=st=1718631916~exp=1718632516~hmac=df5d6f48de28528d62f6878d6b817f4bb175bced6cb5e7437cd6222090c3eb4c',
-              'https://media.istockphoto.com/id/1360515688/vector/welcome-text-ribbon-banner-vector-design.jpg?s=1024x1024&w=is&k=20&c=ryPgweCGbOpdWdPyj6BArOHcfXVD93fMeBvKxbeJbEc='
+              'https://img.freepik.com/free-psd/banner-template-online-shopping_23-2148559048.jpg?semt=ais_hybrid'
   ]
 
   return (

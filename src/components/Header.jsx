@@ -18,6 +18,7 @@ import cartService from "../service/cart.service";
 import axios from "axios";
 import tokenHelper from "../Helper/tokenHelper";
 import userService from "../service/user.service";
+import { BaseURL } from "../Api/api";
 
 function Header({ setCartItemtmp, cartItemtmp }) {
   const history = useNavigate();
@@ -127,7 +128,7 @@ function Header({ setCartItemtmp, cartItemtmp }) {
     try {
       console.log(cartItemtmp);
       const res = await axios.post(
-        "http://localhost:5000/order/create-checkout-session",
+         BaseURL +"/order/create-checkout-session",
         {
           cartItems: cartItemtmp,
           totalPrice: totalPrice,
@@ -228,7 +229,7 @@ function Header({ setCartItemtmp, cartItemtmp }) {
           <div className="w-[50px] h-[50px]">
             <img
               className="w-full h-full object-cover rounded-[50%]"
-              src="https://nuturemite.info/wp-content/uploads/2022/10/nuturmite_logo_tranparent.png"
+              src="https://nuturemite.info/_next/static/media/logo.db085f1f.jpeg"
               alt=""
             />
           </div>
@@ -401,20 +402,20 @@ function Header({ setCartItemtmp, cartItemtmp }) {
 
                   {cartItems?.map((elm, id) => {
                     return (
-                      <>
+                      <>  
                         <tr key={id}>
                           <td className="text-start  pt-5">
                             <div className="  flex flex-row">
                               <div className="w-[100px] h-[100px]">
                                 <img
                                   className="w-full h-full object-cover"
-                                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPxfrd4wI6J8H-TTm5xSWZXPglddGveslM8Og3I4u_bA&s"
+                                  src={elm?.productDetails?.images[0]}
                                   alt=""
                                 />
                               </div>
                               <div className="ps-[30px]">
                                 <h1 className="text-black font-sans font-[600]">
-                                  {elm?.proproductDetails?.name}
+                                  {elm?.productDetails?.name}
                                 </h1>
                                 <p className="text-[#666] text-[14px] pt-1">
                                   {elm?.productDetails["category"][0]}

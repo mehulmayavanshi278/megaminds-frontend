@@ -68,11 +68,8 @@ function App() {
         <Routes>
           <Route path="/"  element={<Homepage />}></Route>
           <Route exact path="/products" element={<Product />}></Route>
-
           <Route path="/products/:type/:id" element={<Singleproduct />}></Route>
-
           <Route path="/products/:type" element={<Product />}></Route>
-
           <Route path="/myaccount" element={<Myaccount />}></Route>
           <Route path="/signup" element={<Signup />}></Route>
           <Route path="/cart" element={<Cart />}></Route>

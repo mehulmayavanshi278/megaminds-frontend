@@ -73,7 +73,7 @@ function Cards({addToCart}) {
               <div className="pt-1">
                 <div className="flex flex-row gap-3 justify-center items-center">
                   <h1 className="text-gray-500 text-lg line-through">
-                    ₹{(elm?.price + 27).toFixed(2)}
+                    ₹{(elm?.price + 17).toFixed(2)}
                   </h1>
                   <h1 className="text-red-600 text-lg font-semibold">
                     ₹{elm?.price}
